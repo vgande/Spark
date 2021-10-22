@@ -8,12 +8,12 @@ object Exercise1 extends App{
   
   val sc = new SparkContext("local[*]","mintemp")
   
-  val chapters = sc.textFile("C:/Users/venki/Downloads/Data/chapters.csv")
-  val views = sc.textFile("C:/Users/venki/Downloads/Data/views*.csv")
+  val chapters = sc.textFile("C:/Users/Downloads/Data/chapters.csv")
+  val views = sc.textFile("C:/Users/Downloads/Data/views*.csv")
               .map(x => (x.split(',')(1),x.split(',')(0)))
               .filter(x => x._2 != "userId")
               .distinct()
-  val titles = sc.textFile("C:/Users/venki/Downloads/Data/titles.csv").map(x => (x.split(',')(0),x.split(',')(1)))             
+  val titles = sc.textFile("C:/Users/Downloads/Data/titles.csv").map(x => (x.split(',')(0),x.split(',')(1)))             
   
   val chapterArray = chapters.map(x => (x.split(',')(1),1))
   val chapterJoin = chapters.map(x => (x.split(',')(0),x.split(',')(1)))
