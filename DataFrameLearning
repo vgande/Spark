@@ -1,0 +1,68 @@
+import org.apache.spark.SparkConf
+import org.apache.spark.sql.SparkSession
+import org.apache.log4j.Level
+import org.apache.log4j.Logger
+
+
+object DataFrameLearning extends App {
+  
+  Logger.getLogger("org").setLevel(Level.ERROR)
+  
+  val sparkConf = new SparkConf()
+  sparkConf.set("spark.app.name", "DataFrame Learning")
+  sparkConf.set("spark.master", "local[2]")
+  
+  val spark = SparkSession.builder()
+  .config(sparkConf)
+  .getOrCreate()
+  
+  val ordersDf = spark.read
+  .format("csv")
+  .option("header",true)
+  .option("inferSchema",true) //Not a recommended choice in Production
+  .option("path","C:/Users/Downloads/Data/orders.csv")
+  .load
+  
+  //Schema is implicitly read by default for json format
+  //Any of the 3 modes can be defined as per business need.
+  //PERMISSIVE (Null Values for the Malformed records and an extra column is created with the Malformed record data)
+  //DROPMALFORMED (Drop the Malformed Records)
+  //FAILFAST (Throw an exception for Malformed Records)
+  val playersDf = spark.read
+  .format("json")
+  .option("path","C:/Users/Downloads/Data/players.json")
+  .option("mode","DROPMALFORMED")
+  .load
+  
+  
+  //parquet format is default, no need to explicitly mention it
+  //schema is part of the file and read by default. 
+  val usersDf = spark.read
+  .option("path","C:/Users/Downloads/Data/users.parquet")
+  .load
+  
+  //Applying basic transformations
+  val groupedOrdersDf = ordersDf
+  .repartition(4)
+  .where("order_customer_id > 10000")
+  .select("order_id","order_customer_id")
+  .groupBy("order_customer_id")
+  .count
+  
+  //Printing sample output and Dataframe metatadata
+  
+  groupedOrdersDf.show()
+  groupedOrdersDf.printSchema()
+  
+  playersDf.show()
+  playersDf.printSchema()
+  
+  usersDf.show()
+  usersDf.printSchema()
+  
+  //Commented as Logger Level is set to ERROR
+  //Logger.getLogger("org").info("Job Completed Successfully")
+  
+  spark.stop()
+  
+}
