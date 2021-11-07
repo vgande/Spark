@@ -37,3 +37,5 @@ object WithColumn extends App{
   formattedDf.withColumn("AdultFlag",expr("ageCheckFunc(age)")).show()
   
 }
+
+spark.stop()
