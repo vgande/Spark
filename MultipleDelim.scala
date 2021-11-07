@@ -38,4 +38,7 @@ object MultipleDelimiters extends App {
   linesDs.show()
   linesDs.groupBy("status").count.show()
   
+  //Column Expression
+  linesDs.selectExpr("order_id", "concat(status,'_STATUS')").show
+  
 }
